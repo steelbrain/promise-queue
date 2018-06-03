@@ -35,7 +35,7 @@ class PromiseQueue {
     })
   }
   add(callback: AddCallback) {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
       const runCallback = () => {
         try {
           this.running++
@@ -67,6 +67,8 @@ class PromiseQueue {
     const callback = this.queue.shift()
     if (callback) {
       callback()
+    } else {
+      this.idleCallbacks.forEach(item => item())
     }
   }
 }
