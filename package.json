@@ -3,7 +3,7 @@
   "main": "lib/index.js",
   "author": "steelbrain",
   "readme": "./README.md",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Sequential promise queue with a nice API",
   "repository": "https://github.com/steelbrain/promise-queue",
   "license": "MIT",
