@@ -26,7 +26,7 @@ class PromiseQueue {
       }
     }
   }
-  waitForIdle(): Promise<void> {
+  waitTillIdle(): Promise<void> {
     return new Promise(resolve => {
       const dispose = this.onIdle(() => {
         dispose()

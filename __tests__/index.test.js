@@ -20,9 +20,11 @@ describe('Promise Queue', function() {
       called.push('third')
     })
     await expect(queue.add(() => Promise.reject(new Error('ding')))).rejects.toHaveProperty('message', 'ding')
-    await queue.add(() => {
+    queue.add(() => {
       called.push('forth')
     })
-    expect(called).toEqual(['first', 'second', 'third', 'onIdle', 'forth', 'onIdle'])
+    await queue.waitTillIdle()
+    called.push('waited till idle')
+    expect(called).toEqual(['first', 'second', 'third', 'onIdle', 'forth', 'onIdle', 'waited till idle'])
   })
 })
