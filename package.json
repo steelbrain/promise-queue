@@ -1,0 +1,27 @@
+{
+  "name": "sb-promise-queue",
+  "main": "lib/index.js",
+  "author": "steelbrain",
+  "readme": "./README.md",
+  "version": "0.0.0",
+  "description": "Sequential promise queue with a nice API",
+  "repository": "https://github.com/steelbrain/promise-queue",
+  "license": "MIT",
+  "keywords": [
+    "Promise",
+    "queue"
+  ],
+  "scripts": {
+    "build": "sb-babel-cli -o lib src",
+    "watch": "npm run build -- --watch",
+    "test": "(apm test) && (flow check) && (eslint . )"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-steelbrain": "^5.0.3",
+    "eslint-config-steelbrain": "^5.0.2",
+    "flow-bin": "^0.73.0",
+    "sb-babel-cli": "^0.1.1"
+  }
+}
