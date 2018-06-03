@@ -27,4 +27,8 @@ describe('Promise Queue', function() {
     called.push('waited till idle')
     expect(called).toEqual(['first', 'second', 'third', 'onIdle', 'forth', 'onIdle', 'waited till idle'])
   })
+  it('invokes waitTillIdle immediately when queue is empty', async function() {
+    const queue = new PromiseQueue()
+    await queue.waitTillIdle()
+  })
 })
