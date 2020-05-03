@@ -1,6 +1,6 @@
 # Promise-Queue
 
-Sequential promise queue with a nice API.
+Promise queue with a nice API.
 
 ### Installation
 
@@ -11,13 +11,21 @@ npm install --save sb-promise-queue
 ## API
 
 ```js
-export default class PromiseQueue {
+interface Options {
+  concurrency?: number
+}
+
+class PromiseQueue {
+  constructor(options: Options = {concurrency: 1});
+
   clear()
   onIdle(callback: Function): Function
   // call the return value function to remove listener
   waitTillIdle(): Promise<void>
   add(callback: Function)
 }
+
+export { PromiseQueue }
 ```
 
 ## License
