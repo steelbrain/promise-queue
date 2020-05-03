@@ -33,7 +33,7 @@ class PromiseQueue {
   }
   public waitTillIdle(): Promise<void> {
     return new Promise(resolve => {
-      if (this.running < 1) {
+      if (this.running === 0) {
         resolve()
         return
       }
@@ -47,8 +47,8 @@ class PromiseQueue {
   public add(callback: AddCallback) {
     return new Promise((resolve, reject) => {
       const runCallback = () => {
+        this.running += 1
         try {
-          this.running += 1
           Promise.resolve(callback()).then(
             val => {
               resolve(val)
@@ -77,7 +77,7 @@ class PromiseQueue {
     const callback = this.queue.shift()
     if (callback) {
       callback()
-    } else {
+    } else if (this.running === 0) {
       this.idleCallbacks.forEach(item => item())
     }
   }
