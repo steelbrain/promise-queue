@@ -1,23 +1,28 @@
-// @flow
-
 type QueueItem = () => void
 type IdleCallback = () => void | Promise<void>
-type AddCallback = () => Promise<void>
+type AddCallback = () => void | Promise<void>
+
+interface Options {
+  concurrency?: number
+}
 
 class PromiseQueue {
+  options: Required<Options>
   running: number
-  queue: Array<QueueItem>
-  idleCallbacks: Array<IdleCallback>
+  queue: QueueItem[]
+  idleCallbacks: IdleCallback[]
 
-  constructor() {
+  constructor({ concurrency = 1 }: Options = {}) {
+    this.options = { concurrency }
+
     this.running = 0
     this.queue = []
     this.idleCallbacks = []
   }
-  clear() {
+  public clear() {
     this.queue = []
   }
-  onIdle(callback: IdleCallback) {
+  public onIdle(callback: IdleCallback) {
     this.idleCallbacks.push(callback)
     return () => {
       const index = this.idleCallbacks.indexOf(callback)
@@ -26,9 +31,9 @@ class PromiseQueue {
       }
     }
   }
-  waitTillIdle(): Promise<void> {
+  public waitTillIdle(): Promise<void> {
     return new Promise(resolve => {
-      if (!this.running) {
+      if (this.running < 1) {
         resolve()
         return
       }
@@ -39,11 +44,11 @@ class PromiseQueue {
       })
     })
   }
-  add(callback: AddCallback) {
+  public add(callback: AddCallback) {
     return new Promise((resolve, reject) => {
       const runCallback = () => {
         try {
-          this.running++
+          this.running += 1
           Promise.resolve(callback()).then(
             val => {
               resolve(val)
@@ -59,7 +64,7 @@ class PromiseQueue {
           this.processNext()
         }
       }
-      if (this.running) {
+      if (this.running >= this.options.concurrency) {
         this.queue.push(runCallback)
       } else {
         runCallback()
@@ -67,8 +72,8 @@ class PromiseQueue {
     })
   }
   // Internal function, don't use
-  processNext() {
-    this.running--
+  private processNext() {
+    this.running -= 1
     const callback = this.queue.shift()
     if (callback) {
       callback()
@@ -78,4 +83,4 @@ class PromiseQueue {
   }
 }
 
-module.exports = PromiseQueue
+export { PromiseQueue }
