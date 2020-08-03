@@ -1,3 +1,7 @@
+### 2.1.0
+
+- Add support for Node.js ESM loader
+
 ### 2.0.0
 
 - Add ESM `module` export
