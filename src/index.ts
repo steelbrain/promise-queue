@@ -8,20 +8,18 @@ interface Options {
 
 class PromiseQueue {
   options: Required<Options>
-  running: number
-  queue: QueueItem[]
-  idleCallbacks: IdleCallback[]
+  running: number = 0;
+  queue: QueueItem[] = []
+  idleCallbacks: IdleCallback[] = []
 
   constructor({ concurrency = 1 }: Options = {}) {
     this.options = { concurrency }
-
-    this.running = 0
-    this.queue = []
-    this.idleCallbacks = []
   }
+
   public clear() {
     this.queue = []
   }
+
   public onIdle(callback: IdleCallback) {
     this.idleCallbacks.push(callback)
     return () => {
@@ -31,6 +29,7 @@ class PromiseQueue {
       }
     }
   }
+
   public waitTillIdle(): Promise<void> {
     return new Promise((resolve) => {
       if (this.running === 0) {
@@ -48,21 +47,18 @@ class PromiseQueue {
     return new Promise((resolve, reject) => {
       const runCallback = () => {
         this.running += 1
-        try {
-          Promise.resolve(callback()).then(
-            (val) => {
-              resolve(val)
-              this.processNext()
-            },
-            (err) => {
-              reject(err)
-              this.processNext()
-            },
-          )
-        } catch (err) {
-          reject(err)
-          this.processNext()
-        }
+        Promise.resolve()
+          .then(() => callback())
+          .then(resolve, reject)
+          .then(() => {
+            this.running -= 1
+            const callback = this.queue.shift()
+            if (callback) {
+              callback()
+            } else if (this.running === 0) {
+              this.idleCallbacks.forEach((item) => item())
+            }
+          })
       }
       if (this.running >= this.options.concurrency) {
         this.queue.push(runCallback)
@@ -70,16 +66,6 @@ class PromiseQueue {
         runCallback()
       }
     })
-  }
-  // Internal function, don't use
-  private processNext() {
-    this.running -= 1
-    const callback = this.queue.shift()
-    if (callback) {
-      callback()
-    } else if (this.running === 0) {
-      this.idleCallbacks.forEach((item) => item())
-    }
   }
 }
 
