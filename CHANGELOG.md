@@ -1,3 +1,7 @@
+### 2.1.1
+
+- Add `types` property in manifest to aid Typescript support
+
 ### 2.1.0
 
 - Add support for Node.js ESM loader
